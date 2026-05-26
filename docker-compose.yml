@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  rabbit-icon:
+    build: .
+    container_name: rabbit-icon
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>白兔图标</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f1f5f9;
+            --muted: #94a3b8;
+            --glass: rgba(15, 23, 42, 0.8);
+        }
+        
+        body {
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #020617 0%, #0f172a 50%, #1e1b4b 100%);
+            min-height: 100vh;
+            color: var(--light);
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        header {
+            text-align: center;
+            padding: 4rem 0 3rem;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 50%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--muted);
+            letter-spacing: 0.05em;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            margin-top: 2rem;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-top: 0.25rem;
+        }
+        
+        .search-container {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: center;
+        }
+        
+        .search-input {
+            width: 100%;
+            max-width: 500px;
+            padding: 1rem 1.5rem;
+            font-size: 1rem;
+            font-family: 'Space Grotesk', sans-serif;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.3);
+            border-radius: 12px;
+            color: var(--light);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: rgba(99, 102, 241, 0.6);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        
+        .search-input::placeholder {
+            color: var(--muted);
+        }
+        
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin: 3rem 0;
+        }
+        
+        .icon-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .icon-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+            background: rgba(30, 64, 175, 0.2);
+        }
+        
+        .icon-card img {
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
+        }
+        
+        .icon-name {
+            font-size: 0.75rem;
+            text-align: center;
+            color: var(--muted);
+            word-break: break-all;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .pagination button {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            color: var(--light);
+            padding: 0.75rem 1.25rem;
+            border-radius: 12px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        
+        .pagination button.active {
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            border: none;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        
+        .pagination-info {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.2rem;
+            color: var(--muted);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.2rem;
+            color: var(--muted);
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(5, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .icon-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                gap: 1rem;
+            }
+            
+            .stats {
+                gap: 1.5rem;
+            }
+            
+            .pagination button {
+                padding: 0.5rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>白兔图标</h1>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="搜索图标..." class="search-input">
+            </div>
+        </header>
+        
+        <div id="iconGrid" class="icon-grid"></div>
+        
+        <div class="pagination" id="pagination"></div>
+    </div>
+    
+    <script>
+        const ICONS_PER_PAGE = 20;
+        let currentPage = 1;
+        let totalPages = 0;
+        let totalIcons = 0;
+        let searchTimeout;
+        
+        async function fetchIcons(page) {
+            const grid = document.getElementById('iconGrid');
+            grid.innerHTML = '<div class="loading">加载中</div>';
+            
+            const searchInput = document.getElementById('searchInput');
+            const searchTerm = searchInput ? encodeURIComponent(searchInput.value) : '';
+            
+            try {
+                let url = `/api/icons?page=${page}&pageSize=${ICONS_PER_PAGE}`;
+                if (searchTerm) {
+                    url += `&search=${searchTerm}`;
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                totalIcons = data.total;
+                totalPages = data.totalPages;
+                currentPage = data.page;
+                
+                renderIcons(data.icons);
+                renderPagination();
+            } catch (error) {
+                console.error('Error fetching icons:', error);
+                grid.innerHTML = '<div class="loading">加载图标出错</div>';
+            }
+        }
+        
+        function encodePath(path) {
+            // 手动替换特殊字符
+            return path.replace(/#/g, '%23')
+                       .replace(/\?/g, '%3F')
+                       .replace(/ /g, '%20')
+                       .replace(/&/g, '%26')
+                       .replace(/\+/g, '%2B');
+        }
+
+        function renderIcons(icons) {
+            const grid = document.getElementById('iconGrid');
+            
+            if (icons.length === 0) {
+                grid.innerHTML = '<div class="no-results">未找到图标</div>';
+                return;
+            }
+            
+            grid.innerHTML = icons.map(icon => `
+                <div class="icon-card" title="${icon.name}">
+                    <img src="${encodePath(icon.path)}" alt="${icon.name}" loading="lazy">
+                    <span class="icon-name">${icon.name}</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            
+            let html = '';
+            
+            html += `<button onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+            
+            const maxVisible = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            
+            if (endPage - startPage + 1 < maxVisible) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
+            }
+            
+            if (startPage > 1) {
+                html += `<button onclick="goToPage(1)">1</button>`;
+                if (startPage > 2) {
+                    html += `<button disabled>...</button>`;
+                }
+            }
+            
+            for (let i = startPage; i <= endPage; i++) {
+                html += `<button onclick="goToPage(${i})" class="${i === currentPage ? 'active' : ''}">${i}</button>`;
+            }
+            
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    html += `<button disabled>...</button>`;
+                }
+                html += `<button onclick="goToPage(${totalPages})">${totalPages}</button>`;
+            }
+            
+            html += `<button onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+            
+            pagination.innerHTML = html;
+        }
+        
+
+        
+        function goToPage(page) {
+            if (page < 1 || page > totalPages) return;
+            fetchIcons(page);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function init() {
+            fetchIcons(1);
+            
+            // 添加搜索功能
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    // 防抖：延迟300ms后执行搜索
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        currentPage = 1;
+                        fetchIcons(1);
+                    }, 300);
+                });
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
