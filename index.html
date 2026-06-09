@@ -237,7 +237,6 @@
         
         .lightbox-overlay.active {
             display: flex;
-            animation: fadeIn 0.3s ease;
         }
         
         .lightbox-content {
@@ -250,7 +249,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            animation: scaleIn 0.3s ease;
             cursor: default;
         }
         
@@ -478,12 +476,12 @@
             }
             
             grid.innerHTML = icons.map(icon => `
-                <div class="icon-card" title="${icon.name}">
+                <div class="icon-card" title="${icon.name}" onclick="viewIcon('${encodePath(icon.path)}', '${icon.name}')">
                     <img src="${encodePath(icon.path)}" alt="${icon.name}" loading="lazy">
                     <span class="icon-name">${icon.name}</span>
                     <div class="icon-actions">
-                        <button class="icon-btn view" onclick="viewIcon('${encodePath(icon.path)}', '${icon.name}')">查看</button>
-                        <button class="icon-btn download" onclick="downloadIcon('${encodePath(icon.path)}', '${icon.name}')">下载</button>
+                        <button class="icon-btn view" onclick="event.stopPropagation(); viewIcon('${encodePath(icon.path)}', '${icon.name}')">查看</button>
+                        <button class="icon-btn download" onclick="event.stopPropagation(); downloadIcon('${encodePath(icon.path)}', '${icon.name}')">下载</button>
                     </div>
                 </div>
             `).join('');
