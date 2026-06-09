@@ -2,7 +2,7 @@
 
 # Docker Hub 用户名和镜像名称 - 请修改为你自己的配置
 DOCKER_USERNAME="your-username"
-IMAGE_NAME="rabbit-icon"
+IMAGE_NAME="open-icon-repository"
 IMAGE_TAG="latest"
 
 # 完整的镜像名称
@@ -38,7 +38,7 @@ if [ $? -eq 0 ]; then
         echo "docker pull ${FULL_IMAGE_NAME}"
         echo ""
         echo "使用以下命令运行镜像："
-        echo "docker run -d -p 8080:8080 --name rabbit-icon ${FULL_IMAGE_NAME}"
+        echo "docker run -d -p 8080:8080 --name open-icon-repository ${FULL_IMAGE_NAME}"
     else
         echo "❌ 镜像推送失败"
         exit 1

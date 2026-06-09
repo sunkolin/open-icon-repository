@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  rabbit-icon:
+  open-icon-repository:
     build: .
-    container_name: rabbit-icon
+    container_name: open-icon-repository
     ports:
       - "8080:8080"
     restart: unless-stopped
