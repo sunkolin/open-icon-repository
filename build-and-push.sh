@@ -38,7 +38,7 @@ if [ $? -eq 0 ]; then
         echo "docker pull ${FULL_IMAGE_NAME}"
         echo ""
         echo "使用以下命令运行镜像："
-        echo "docker run -d -p 8080:8080 --name open-icon-repository ${FULL_IMAGE_NAME}"
+        echo "docker run -d -p 6024:6024 --name open-icon-repository ${FULL_IMAGE_NAME}"
     else
         echo "❌ 镜像推送失败"
         exit 1

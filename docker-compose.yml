@@ -5,10 +5,10 @@ services:
     build: .
     container_name: open-icon-repository
     ports:
-      - "8080:8080"
+      - "6024:6024"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080"]
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:6024"]
       interval: 30s
       timeout: 10s
       retries: 3

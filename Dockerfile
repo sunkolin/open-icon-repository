@@ -29,7 +29,7 @@ COPY --from=builder /app/index.html .
 COPY --from=builder /app/icon ./icon
 
 # 暴露端口
-EXPOSE 8080
+EXPOSE 6024
 
 # 运行应用
 CMD ["./open-icon-repository"]

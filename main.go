@@ -147,6 +147,6 @@ func main() {
 		http.FileServer(http.Dir(".")).ServeHTTP(w, &newReq)
 	})
 
-	fmt.Println("Server starting on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	fmt.Println("Server starting on http://localhost:6024")
+	log.Fatal(http.ListenAndServe(":6024", nil))
 }
