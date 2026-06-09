@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Docker Hub 用户名和镜像名称 - 请修改为你自己的配置
-DOCKER_USERNAME="your-username"
+DOCKER_USERNAME="sunkolin"
 IMAGE_NAME="open-icon-repository"
 IMAGE_TAG="latest"
 
