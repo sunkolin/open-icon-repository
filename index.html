@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>白兔图标</title>
+    <link rel="icon" href="baitutubiao.png" type="image/png">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
         
@@ -55,7 +56,7 @@
         
         header {
             text-align: center;
-            padding: 4rem 0 3rem;
+            padding: 3rem 0 1rem;
         }
         
         h1 {
@@ -174,6 +175,134 @@
             color: var(--muted);
             word-break: break-all;
             font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 0.75rem;
+        }
+        
+        .icon-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+        
+        .icon-btn {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.7rem;
+            font-family: 'Space Grotesk', sans-serif;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+        }
+        
+        .icon-btn.view {
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .icon-btn.view:hover {
+            background: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .icon-btn.download {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .icon-btn.download:hover {
+            background: rgba(34, 197, 94, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .lightbox-overlay.active {
+            display: flex;
+        }
+        
+        .lightbox-content {
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 90vw;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: default;
+        }
+        
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 70vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+        
+        .lightbox-title {
+            margin-top: 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            color: var(--muted);
+            text-align: center;
+            word-break: break-all;
+            max-width: 400px;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 48px;
+            height: 48px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(148, 163, 184, 0.1);
+            color: var(--muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .lightbox-close:hover {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--light);
+            transform: scale(1.1);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
         }
         
         .pagination {
@@ -287,6 +416,14 @@
         <div class="pagination" id="pagination"></div>
     </div>
     
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <button class="lightbox-close" onclick="event.stopPropagation(); closeLightbox()">&times;</button>
+        <div class="lightbox-content" onclick="event.stopPropagation()">
+            <img id="lightboxImage" src="" alt="">
+            <div class="lightbox-title" id="lightboxTitle"></div>
+        </div>
+    </div>
+    
     <script>
         const ICONS_PER_PAGE = 20;
         let currentPage = 1;
@@ -340,11 +477,47 @@
             }
             
             grid.innerHTML = icons.map(icon => `
-                <div class="icon-card" title="${icon.name}">
+                <div class="icon-card" title="${icon.name}" onclick="viewIcon('${encodePath(icon.path)}', '${icon.name}')">
                     <img src="${encodePath(icon.path)}" alt="${icon.name}" loading="lazy">
                     <span class="icon-name">${icon.name}</span>
+                    <div class="icon-actions">
+                        <button class="icon-btn view" onclick="event.stopPropagation(); viewIcon('${encodePath(icon.path)}', '${icon.name}')">查看</button>
+                        <button class="icon-btn download" onclick="event.stopPropagation(); downloadIcon('${encodePath(icon.path)}', '${icon.name}')">下载</button>
+                    </div>
                 </div>
             `).join('');
+        }
+        
+        function viewIcon(path, name) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightboxImage');
+            const lightboxTitle = document.getElementById('lightboxTitle');
+            
+            lightboxImage.src = path;
+            lightboxTitle.textContent = name;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLightbox();
+            }
+        });
+        
+        function downloadIcon(path, name) {
+            const link = document.createElement('a');
+            link.href = path;
+            link.download = name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
         function renderPagination() {
