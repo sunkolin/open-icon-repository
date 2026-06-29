@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main, dev, feature/* ,fix-show-icon]
 
+env:
+  APP_VERSION: "1.0.0"
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,4 +29,6 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKERHUB_USERNAME }}/open-icon-repository:latest
+        tags: |
+          ${{ secrets.DOCKERHUB_USERNAME }}/open-icon-repository:latest
+          ${{ secrets.DOCKERHUB_USERNAME }}/open-icon-repository:${{ env.APP_VERSION }}
