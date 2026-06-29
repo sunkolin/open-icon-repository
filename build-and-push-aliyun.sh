@@ -21,27 +21,37 @@ if [ $? -eq 0 ]; then
     echo "✅ 镜像构建成功！"
     echo ""
     echo "=========================================="
-    echo "开始推送镜像到 Docker Hub..."
+    echo "开始推送镜像到阿里云镜像仓库..."
     echo "=========================================="
     
-    # 登录阿里云镜像
-    docker login --username=sunkolin@qq.com registry.cn-hangzhou.aliyuncs.com
-    # 推送镜像到阿里云镜像
+    ALIYUN_REGISTRY="registry.cn-hangzhou.aliyuncs.com"
+    ALIYUN_IMAGE_NAME="${ALIYUN_REGISTRY}/${FULL_IMAGE_NAME}"
     
-    # 推送镜像
-    docker push registry.cn-hangzhou.aliyuncs.com/${FULL_IMAGE_NAME}
-
+    docker tag ${FULL_IMAGE_NAME} ${ALIYUN_IMAGE_NAME}
+    
     if [ $? -eq 0 ]; then
         echo ""
-        echo "✅ 镜像推送成功！"
-        echo ""
-        echo "使用以下命令拉取镜像："
-        echo "docker pull ${FULL_IMAGE_NAME}"
-        echo ""
-        echo "使用以下命令运行镜像："
-        echo "docker run -d -p 6024:6024 --name open-icon-repository ${FULL_IMAGE_NAME}"
+        echo "✅ 镜像标签添加成功！"
+        
+        docker login --username=sunkolin@qq.com ${ALIYUN_REGISTRY}
+        
+        docker push ${ALIYUN_IMAGE_NAME}
+
+        if [ $? -eq 0 ]; then
+            echo ""
+            echo "✅ 镜像推送成功！"
+            echo ""
+            echo "使用以下命令拉取镜像："
+            echo "docker pull ${ALIYUN_IMAGE_NAME}"
+            echo ""
+            echo "使用以下命令运行镜像："
+            echo "docker run -d -p 6024:6024 --name open-icon-repository ${FULL_IMAGE_NAME}"
+        else
+            echo "❌ 镜像推送失败"
+            exit 1
+        fi
     else
-        echo "❌ 镜像推送失败"
+        echo "❌ 镜像标签添加失败"
         exit 1
     fi
 else
