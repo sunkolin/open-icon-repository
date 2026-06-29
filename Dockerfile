@@ -7,10 +7,11 @@ WORKDIR /app
 COPY go.mod ./
 RUN go mod download
 
-# 复制源代码
+# 复制源代码和资源文件
 COPY main.go ./
 COPY index.html ./
 COPY icon ./icon
+COPY baitutubiao.png ./
 
 # 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -o open-icon-repository .
@@ -27,6 +28,7 @@ WORKDIR /app
 COPY --from=builder /app/open-icon-repository .
 COPY --from=builder /app/index.html .
 COPY --from=builder /app/icon ./icon
+COPY --from=builder /app/baitutubiao.png ./
 
 # 暴露端口
 EXPOSE 6024
