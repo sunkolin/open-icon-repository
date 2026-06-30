@@ -6,14 +6,10 @@ on:
 
 env:
   APP_VERSION: "1.0.3"
-  ENABLE: "false"
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      ENABLE_BUILD: ${{ env.ENABLE }}
-    if: ${{ env.ENABLE_BUILD == 'true' }}
 
     steps:
     - name: Checkout code
