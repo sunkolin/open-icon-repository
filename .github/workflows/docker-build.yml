@@ -6,16 +6,16 @@ on:
 
 env:
   APP_VERSION: "1.0.3"
-  ENABLE_BUILD: "true"
+  ENABLE: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Check build flag
-        if: ${{ env.ENABLE_BUILD != 'true' }}
+        if: ${{ !env.ENABLE }}
         run: |
-          echo "Build is disabled (ENABLE_BUILD=${{ env.ENABLE_BUILD }})"
+          echo "Build is disabled (ENABLE=${{ env.ENABLE }})"
           exit 1
 
       - name: Checkout code
