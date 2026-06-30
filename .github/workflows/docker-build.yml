@@ -5,14 +5,19 @@ on:
     branches: [ main, dev, feature/* ]
 
 env:
+  ENABLE: false
   APP_VERSION: "1.0.3"
-  ENABLE: "false"
 
 jobs:
   build:
-    if: ${{ ENABLE == 'true' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Check build flag
+        if: ${{ !env.ENABLE }}
+        run: |
+          echo "Build is disabled (ENABLE=${{ env.ENABLE }})"
+          exit 1
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -25,7 +30,7 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and Push Docker Image
+      - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: .
