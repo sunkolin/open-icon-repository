@@ -5,8 +5,8 @@ on:
     branches: [ main, dev, feature/* ,fix-show-icon]
 
 env:
-  APP_VERSION: "1.0.3"
   ENABLE: true
+  APP_VERSION: "1.0.3"
 
 jobs:
   build:
