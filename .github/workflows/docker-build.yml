@@ -6,10 +6,12 @@ on:
 
 env:
   APP_VERSION: "1.0.3"
+  ENABLE_DOCKER_BUILD: "true"
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ env.ENABLE_DOCKER_BUILD == 'true' }}
 
     steps:
     - name: Checkout code
