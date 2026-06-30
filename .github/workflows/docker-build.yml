@@ -11,7 +11,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ env.ENABLE_DOCKER_BUILD == 'true' }}
+    if: ${{ ENABLE_DOCKER_BUILD == 'true' }}
 
     steps:
     - name: Checkout code
