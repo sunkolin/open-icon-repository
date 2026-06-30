@@ -13,10 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check build flag
-        if: ${{ !env.ENABLE }}
         run: |
-          echo "Build is disabled (ENABLE=${{ env.ENABLE }})"
-          exit 1
+          if [ "${{ env.ENABLE }}" != "true" ]; then
+            echo "Build is disabled (ENABLE=${{ env.ENABLE }})"
+            exit 1
+          fi
 
       - name: Checkout code
         uses: actions/checkout@v4
