@@ -11,7 +11,9 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: ${{ ENABLE == 'true' }}
+    env:
+      ENABLE_BUILD: ${{ env.ENABLE }}
+    if: ${{ env.ENABLE_BUILD == 'true' }}
 
     steps:
     - name: Checkout code
