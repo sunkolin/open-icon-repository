@@ -3,22 +3,20 @@
 #### 欢迎提交图标
 - 欢迎提交图标
 
+#### docker-compose部署
 
-#### 1.0.1 版本
-- 图标下载功能
-
-#### 1.0.2 版本
-- 修改 Go 版本为 1.24
-
-#### 1.0.3 版本
-- 修复在docker中运行时的网站图标显示问题
-- 增加推送到github后自动构建并推送镜像功能
-
-#### 1.0.4 版本
-- 增加图标
-
-#### 1.0.5 版本
-- 增加图标
-
-#### 1.0.6 版本
-- 增加图标
+```yaml
+services:
+  open-icon-repository:
+    image: sunkolin/open-icon-repository:latest
+    container_name: open-icon-repository
+    ports:
+      - "6024:6024"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:6024"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+```
