@@ -1,0 +1,16 @@
+{
+    ".url": {
+        "open-icon-repository.Application": {
+            "title": "白兔开源图标",
+            "icon": "images/icon_{0}.png",
+            "type": "url",
+            "protocol": "",
+            "port": "6024",
+            "url": "/",
+            "allUsers": true,
+            "control": {
+              "accessPerm": "editable"
+            }
+        }
+    }
+}

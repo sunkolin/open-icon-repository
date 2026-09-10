@@ -1,0 +1,9 @@
+{
+    "defaults":
+    {
+        "run-as": "package"
+    },
+    "username": "docker-open-icon-repository",
+    "groupname": "docker-open-icon-repository",
+    "permissions": ["docker"]
+}

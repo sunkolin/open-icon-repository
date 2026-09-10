@@ -1,0 +1,13 @@
+appname               = open-icon-repository
+version               = 1.0.0
+display_name          = 白兔开源图标
+desc                  = 白兔开源图标
+platform              = all
+source                = thirdparty
+maintainer            = 小林
+maintainer_url        = https://github.com/sunkolin/open-icon-repository
+distributor           = 小林
+distributor_url       = https://github.com/sunkolin/fn-open-icon-repository
+desktop_uidir         = ui
+desktop_applaunchname = open-icon-repository.Application
+service_port          = 6024

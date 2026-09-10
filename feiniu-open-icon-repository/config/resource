@@ -1,0 +1,20 @@
+{
+  "docker-project": {
+    "projects": [
+      {
+        "name": "open-icon-repository",
+        "path": "docker"
+      }
+    ]
+  },
+  "data-share": {
+    "shares": [
+      {
+        "name": "open-icon-repository"
+      },
+      {
+        "name": "open-icon-repository/data"
+      }
+    ]
+  }
+}
