@@ -8,6 +8,8 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -26,6 +28,44 @@ type IconsResponse struct {
 }
 
 var allIcons []Icon
+
+var suffixPattern = regexp.MustCompile(`^(.+?)-(\d+)$`)
+
+func parseFileName(name string) (baseName string, suffix int, hasSuffix bool) {
+	ext := filepath.Ext(name)
+	base := strings.TrimSuffix(name, ext)
+
+	if m := suffixPattern.FindStringSubmatch(base); m != nil {
+		num, err := strconv.Atoi(m[2])
+		if err == nil {
+			return m[1], num, true
+		}
+	}
+	return base, 0, false
+}
+
+func sortIcons(icons []Icon) {
+	sort.Slice(icons, func(i, j int) bool {
+		iBase, iSuffix, iHasSuffix := parseFileName(icons[i].Name)
+		jBase, jSuffix, jHasSuffix := parseFileName(icons[j].Name)
+
+		if iBase != jBase {
+			return iBase < jBase
+		}
+
+		if !iHasSuffix && jHasSuffix {
+			return true
+		}
+		if iHasSuffix && !jHasSuffix {
+			return false
+		}
+		if !iHasSuffix && !jHasSuffix {
+			return icons[i].Name < icons[j].Name
+		}
+
+		return iSuffix < jSuffix
+	})
+}
 
 func collectIcons() error {
 	allIcons = []Icon{}
@@ -46,6 +86,11 @@ func collectIcons() error {
 		}
 		return nil
 	})
+
+	if err == nil {
+		sortIcons(allIcons)
+	}
+
 	return err
 }
 
