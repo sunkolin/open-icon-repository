@@ -38,10 +38,63 @@ var suffixPattern = regexp.MustCompile(`^(.+?)-(\d+)$`)
 
 var pinyinArgs = pinyin.NewArgs()
 
+type overrideEntry struct {
+	cn   string
+	full string
+}
+
+var pinyinOverrides []overrideEntry
+
+func init() {
+	pinyinOverrides = []overrideEntry{
+		{"农商行", "nong shang hang"},
+		{"银行", "yin hang"},
+		{"西藏", "xi zang"},
+		{"音乐", "yin yue"},
+		{"重庆", "chong qing"},
+		{"重生", "chong sheng"},
+		{"重返", "chong fan"},
+		{"重卡", "zhong ka"},
+		{"长安", "chang an"},
+		{"长沙", "chang sha"},
+		{"长城", "chang cheng"},
+		{"长江", "chang jiang"},
+		{"长荣", "chang rong"},
+		{"长龙", "chang long"},
+		{"长佩", "chang pei"},
+		{"首都", "shou du"},
+	}
+	sort.Slice(pinyinOverrides, func(i, j int) bool {
+		return len([]rune(pinyinOverrides[i].cn)) > len([]rune(pinyinOverrides[j].cn))
+	})
+}
+
 func buildPinyin(text string) (full, initial string) {
 	runes := []rune(text)
 	var fullBuilder, initialBuilder strings.Builder
-	for _, r := range runes {
+	i := 0
+	for i < len(runes) {
+		matched := false
+		for _, entry := range pinyinOverrides {
+			ocr := []rune(entry.cn)
+			if i+len(ocr) <= len(runes) && string(runes[i:i+len(ocr)]) == entry.cn {
+				parts := strings.Split(entry.full, " ")
+				for _, p := range parts {
+					p = strings.ToLower(p)
+					fullBuilder.WriteString(p)
+					if len(p) > 0 {
+						initialBuilder.WriteByte(p[0])
+					}
+				}
+				i += len(ocr)
+				matched = true
+				break
+			}
+		}
+		if matched {
+			continue
+		}
+		r := runes[i]
 		if r >= 0x4E00 && r <= 0x9FFF {
 			py := pinyin.SinglePinyin(r, pinyinArgs)
 			if len(py) > 0 {
@@ -52,6 +105,7 @@ func buildPinyin(text string) (full, initial string) {
 			fullBuilder.WriteRune(r)
 			initialBuilder.WriteRune(r)
 		}
+		i++
 	}
 	full = strings.ToLower(strings.ReplaceAll(fullBuilder.String(), " ", ""))
 	initial = strings.ToLower(strings.ReplaceAll(initialBuilder.String(), " ", ""))
