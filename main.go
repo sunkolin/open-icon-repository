@@ -12,11 +12,16 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/mozillazg/go-pinyin"
 )
 
 type Icon struct {
-	Path string `json:"path"`
-	Name string `json:"name"`
+	Path          string `json:"path"`
+	Name          string `json:"name"`
+	nameLower     string
+	pinyinFull    string
+	pinyinInitial string
 }
 
 type IconsResponse struct {
@@ -30,6 +35,28 @@ type IconsResponse struct {
 var allIcons []Icon
 
 var suffixPattern = regexp.MustCompile(`^(.+?)-(\d+)$`)
+
+var pinyinArgs = pinyin.NewArgs()
+
+func buildPinyin(text string) (full, initial string) {
+	runes := []rune(text)
+	var fullBuilder, initialBuilder strings.Builder
+	for _, r := range runes {
+		if r >= 0x4E00 && r <= 0x9FFF {
+			py := pinyin.SinglePinyin(r, pinyinArgs)
+			if len(py) > 0 {
+				fullBuilder.WriteString(py[0])
+				initialBuilder.WriteString(string(py[0][0]))
+			}
+		} else {
+			fullBuilder.WriteRune(r)
+			initialBuilder.WriteRune(r)
+		}
+	}
+	full = strings.ToLower(strings.ReplaceAll(fullBuilder.String(), " ", ""))
+	initial = strings.ToLower(strings.ReplaceAll(initialBuilder.String(), " ", ""))
+	return
+}
 
 func parseFileName(name string) (baseName string, suffix int, hasSuffix bool) {
 	ext := filepath.Ext(name)
@@ -78,9 +105,14 @@ func collectIcons() error {
 		if !info.IsDir() {
 			ext := strings.ToLower(filepath.Ext(path))
 			if ext == ".png" || ext == ".svg" || ext == ".jpg" || ext == ".jpeg" || ext == ".gif" {
+				baseName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
+				full, initial := buildPinyin(baseName)
 				allIcons = append(allIcons, Icon{
-					Path: filepath.ToSlash(path),
-					Name: info.Name(),
+					Path:          filepath.ToSlash(path),
+					Name:          info.Name(),
+					nameLower:     strings.ToLower(info.Name()),
+					pinyinFull:    full,
+					pinyinInitial: initial,
 				})
 			}
 		}
@@ -123,7 +155,9 @@ func iconsHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		searchLower := strings.ToLower(search)
 		for _, icon := range allIcons {
-			if strings.Contains(strings.ToLower(icon.Name), searchLower) {
+			if strings.Contains(icon.nameLower, searchLower) ||
+				strings.Contains(icon.pinyinFull, searchLower) ||
+				strings.Contains(icon.pinyinInitial, searchLower) {
 				filteredIcons = append(filteredIcons, icon)
 			}
 		}
