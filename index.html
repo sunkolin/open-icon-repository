@@ -143,6 +143,7 @@
             grid-template-columns: repeat(5, 1fr);
             gap: 0.75rem;
             margin: 1rem 0;
+            align-items: stretch;
         }
         
         .icon-card {
@@ -151,13 +152,15 @@
             backdrop-filter: blur(10px);
             border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 10px;
-            padding: 0.5rem;
+            padding: 0.75rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            gap: 0.4rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             overflow: hidden;
+            justify-content: space-between;
         }
         
         .icon-card:hover {
@@ -203,17 +206,25 @@
             white-space: nowrap;
         }
         
-        .icon-action-btn.view:hover {
+        .icon-card:hover .icon-action-btn.view {
             background: rgba(59, 130, 246, 0.9);
             border-color: rgba(59, 130, 246, 1);
             color: #fff;
+        }
+        
+        .icon-card:hover .icon-action-btn.download {
+            background: rgba(239, 68, 68, 0.9);
+            border-color: rgba(239, 68, 68, 1);
+            color: #fff;
+        }
+        
+        .icon-action-btn.view:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
         }
         
         .icon-action-btn.download:hover {
-            background: rgba(239, 68, 68, 0.9);
-            border-color: rgba(239, 68, 68, 1);
+            transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
         }
         
@@ -221,7 +232,6 @@
             width: 72px;
             height: 72px;
             object-fit: contain;
-            margin-bottom: 0.75rem;
             filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3));
         }
         
@@ -231,7 +241,8 @@
             color: var(--muted);
             word-break: break-all;
             font-family: 'JetBrains Mono', monospace;
-            margin-top: auto;
+            line-height: 1;
+            margin: 0;
         }
         
         .lightbox-overlay {
