@@ -4,7 +4,7 @@ FROM golang:1.24-alpine AS builder
 WORKDIR /app
 
 # 复制 go.mod 和 go.sum
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 # 复制源代码和资源文件
