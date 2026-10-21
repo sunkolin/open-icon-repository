@@ -1,5 +1,5 @@
 # 构建阶段
-FROM golang:1.24-alpine AS builder
+FROM golang:1.24-noble AS builder
 
 WORKDIR /app
 
@@ -17,10 +17,10 @@ COPY baitutubiao.png ./
 RUN CGO_ENABLED=0 GOOS=linux go build -o open-icon-repository .
 
 # 运行阶段
-FROM alpine:latest
+FROM ubuntu:24.04
 
 # 安装必要的工具
-RUN apk add --no-cache wget
+RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
