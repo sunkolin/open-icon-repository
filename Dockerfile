@@ -1,5 +1,5 @@
 # 构建阶段
-FROM golang:1.24-noble AS builder
+FROM ubuntu/go:1.24-24.04 AS builder
 
 WORKDIR /app
 
