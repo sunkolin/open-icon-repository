@@ -1,37 +1,36 @@
 # 构建阶段
-FROM ubuntu/go:1.24-24.04 AS builder
+FROM ubuntu:26.04 AS builder
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends golang-go && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 复制 go.mod 和 go.sum
 COPY go.mod go.sum ./
 RUN go mod download
 
-# 复制源代码和资源文件
 COPY main.go ./
 COPY index.html ./
 COPY icon ./icon
 COPY baitutubiao.png ./
 
-# 构建应用
 RUN CGO_ENABLED=0 GOOS=linux go build -o open-icon-repository .
 
 # 运行阶段
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
-# 安装必要的工具
-RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends wget ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# 从构建阶段复制二进制文件和静态资源
 COPY --from=builder /app/open-icon-repository .
 COPY --from=builder /app/index.html .
 COPY --from=builder /app/icon ./icon
 COPY --from=builder /app/baitutubiao.png ./
 
-# 暴露端口
 EXPOSE 6024
 
-# 运行应用
 CMD ["./open-icon-repository"]
