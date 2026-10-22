@@ -23,7 +23,7 @@ FROM ubuntu:26.04
 ENV TZ=Asia/Shanghai
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends wget ca-certificates curl telnet tzdata && \
+    apt-get install -y --no-install-recommends wget ca-certificates curl telnet tzdata vim && \
     ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     echo "alias ll='ls -al'" >> /root/.bashrc && \
