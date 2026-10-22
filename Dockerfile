@@ -2,7 +2,7 @@
 FROM ubuntu:26.04 AS builder
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends golang-go && \
+    apt-get install -y --no-install-recommends golang-go ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
