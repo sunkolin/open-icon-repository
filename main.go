@@ -188,9 +188,9 @@ func adminIconsHandler(w http.ResponseWriter, r *http.Request) {
 		Name string `json:"name"`
 	}
 
-	var names []NameOnly
+	nameSet := make(map[string]struct{})
 
-	err := filepath.Walk(".icon", func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(".icon", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -198,15 +198,24 @@ func adminIconsHandler(w http.ResponseWriter, r *http.Request) {
 			ext := strings.ToLower(filepath.Ext(path))
 			if ext == ".png" {
 				baseName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
-				names = append(names, NameOnly{Name: baseName})
+				nameSet[baseName] = struct{}{}
 			}
 		}
 		return nil
 	})
 
-	if err != nil {
-		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
-		return
+	if data, err := os.ReadFile(".icon/icon.txt"); err == nil {
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line != "" {
+				nameSet[line] = struct{}{}
+			}
+		}
+	}
+
+	names := make([]NameOnly, 0, len(nameSet))
+	for n := range nameSet {
+		names = append(names, NameOnly{Name: n})
 	}
 
 	sort.Slice(names, func(i, j int) bool {
