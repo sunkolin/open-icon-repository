@@ -180,6 +180,42 @@ func collectIcons() error {
 	return err
 }
 
+func adminIconsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	type NameOnly struct {
+		Name string `json:"name"`
+	}
+
+	var names []NameOnly
+
+	err := filepath.Walk(".icon", func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() {
+			ext := strings.ToLower(filepath.Ext(path))
+			if ext == ".png" {
+				baseName := strings.TrimSuffix(info.Name(), filepath.Ext(info.Name()))
+				names = append(names, NameOnly{Name: baseName})
+			}
+		}
+		return nil
+	})
+
+	if err != nil {
+		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
+		return
+	}
+
+	sort.Slice(names, func(i, j int) bool {
+		return names[i].Name < names[j].Name
+	})
+
+	json.NewEncoder(w).Encode(names)
+}
+
 func iconsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -259,9 +295,11 @@ func main() {
 	fmt.Printf("Found %d icons\n", len(allIcons))
 
 	http.HandleFunc("/api/icons", iconsHandler)
-	// 自定义文件服务器处理函数
+	http.HandleFunc("/api/admin-icons", adminIconsHandler)
+	http.HandleFunc("/admin.html", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "admin.html")
+	})
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		// 如果请求根路径，返回 index.html
 		if r.URL.Path == "/" {
 			http.ServeFile(w, r, "index.html")
 			return

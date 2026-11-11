@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - iTunes 图标匹配</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: #f5f6f8;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 1.25rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .info {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+
+        .controls {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #1d4ed8;
+        }
+
+        .btn-primary:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .progress {
+            font-size: 0.85rem;
+            color: #2563eb;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1.5rem 2rem;
+        }
+
+        .group {
+            margin-bottom: 2rem;
+        }
+
+        .group-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #111827;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .group-title .badge {
+            font-size: 0.7rem;
+            background: #e5e7eb;
+            color: #6b7280;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+        }
+
+        .card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .card:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
+            border-radius: 16px;
+            background: #f3f4f6;
+        }
+
+        .card .app-name {
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: 0.6rem;
+            color: #111827;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card .matched-name {
+            font-size: 0.75rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+
+        .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem;
+            color: #9ca3af;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: #6b7280;
+            font-size: 1rem;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #dc2626;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>iTunes 图标匹配</h1>
+        <div class="info">获取 .icon 目录下的图标名称，从 iTunes Search API 查找对应图标</div>
+        <div class="controls">
+            <button class="btn btn-primary" id="startBtn" onclick="startFetch()">开始获取</button>
+            <span class="progress" id="progress"></span>
+        </div>
+    </header>
+
+    <div class="container" id="content">
+        <div class="loading" id="loading">点击"开始获取"按钮开始</div>
+    </div>
+
+    <script>
+        let jsonpCounter = 0;
+
+        function fetchJSONP(url) {
+            return new Promise((resolve, reject) => {
+                const callbackName = 'jsonp_' + (++jsonpCounter) + '_' + Date.now();
+                const cbUrl = url + (url.includes('?') ? '&' : '?') + 'callback=' + callbackName;
+
+                const script = document.createElement('script');
+                script.src = cbUrl;
+
+                const timeout = setTimeout(() => {
+                    cleanup();
+                    reject(new Error('JSONP timeout'));
+                }, 15000);
+
+                function cleanup() {
+                    clearTimeout(timeout);
+                    delete window[callbackName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+
+                window[callbackName] = function(data) {
+                    cleanup();
+                    resolve(data);
+                };
+
+                script.onerror = function() {
+                    cleanup();
+                    reject(new Error('JSONP error'));
+                };
+
+                document.head.appendChild(script);
+            });
+        }
+
+        async function startFetch() {
+            const btn = document.getElementById('startBtn');
+            const progress = document.getElementById('progress');
+            const content = document.getElementById('content');
+
+            btn.disabled = true;
+            content.innerHTML = '<div class="loading">正在获取图标列表...</div>';
+
+            let names;
+            try {
+                const resp = await fetch('/api/admin-icons');
+                names = await resp.json();
+            } catch (e) {
+                content.innerHTML = '<div class="error">获取图标列表失败: ' + e.message + '</div>';
+                btn.disabled = false;
+                return;
+            }
+
+            if (!names || names.length === 0) {
+                content.innerHTML = '<div class="empty">.icon 目录下没有图标</div>';
+                btn.disabled = false;
+                return;
+            }
+
+            const groups = {};
+            for (const n of names) {
+                groups[n.name] = [];
+            }
+
+            let done = 0;
+            const total = names.length;
+
+            const BATCH_SIZE = 5;
+            const SLEEP_MS = 300;
+
+            async function processBatch(batch) {
+                const results = await Promise.all(batch.map(n => fetchOne(n.name)));
+                for (let i = 0; i < batch.length; i++) {
+                    groups[batch[i].name] = results[i];
+                }
+                done += batch.length;
+                progress.textContent = done + ' / ' + total;
+                render(groups);
+            }
+
+            for (let i = 0; i < names.length; i += BATCH_SIZE) {
+                const batch = names.slice(i, i + BATCH_SIZE);
+                await processBatch(batch);
+                if (i + BATCH_SIZE < names.length) {
+                    await new Promise(r => setTimeout(r, SLEEP_MS));
+                }
+            }
+
+            progress.textContent = '完成 (' + done + ' / ' + total + ')';
+            btn.disabled = false;
+        }
+
+        async function fetchOne(name) {
+            const term = encodeURIComponent(name);
+            const url = 'https://itunes.apple.com/search?term=' + term + '&country=CN&entity=software&limit=20';
+
+            try {
+                const data = await fetchJSONP(url);
+                if (!data || !Array.isArray(data.results)) return [];
+
+                return data.results
+                    .filter(r => r.trackName && r.trackName.startsWith(name))
+                    .map(r => ({
+                        trackName: r.trackName,
+                        artworkUrl1024: (r.artworkUrl512 || '').replace('512x512bb.jpg', '1024x1024bb.jpg'),
+                        artworkUrl512: r.artworkUrl512 || '',
+                    }));
+            } catch (e) {
+                console.error('Fetch failed for', name, e);
+                return [];
+            }
+        }
+
+        function render(groups) {
+            const content = document.getElementById('content');
+            let html = '';
+
+            const keys = Object.keys(groups).sort((a, b) => a.localeCompare(b, 'zh'));
+
+            for (const key of keys) {
+                const items = groups[key];
+                html += '<div class="group">';
+                html += '<div class="group-title">';
+                html += escapeHtml(key);
+                html += '<span class="badge">' + items.length + ' 个匹配</span>';
+                html += '</div>';
+
+                if (items.length === 0) {
+                    html += '<div class="grid"><div class="empty">无匹配结果</div></div>';
+                } else {
+                    html += '<div class="grid">';
+                    for (const item of items) {
+                        const img = item.artworkUrl1024 || item.artworkUrl512;
+                        html += '<div class="card">';
+                        if (img) {
+                            html += '<img src="' + escapeHtml(img) + '" alt="' + escapeHtml(item.trackName) + '" loading="lazy" onerror="this.src=\'' + escapeHtml(item.artworkUrl512) + '\'">';
+                        } else {
+                            html += '<div style="width:100px;height:100px;margin:0 auto;background:#f3f4f6;border-radius:16px;"></div>';
+                        }
+                        html += '<div class="app-name" title="' + escapeHtml(item.trackName) + '">' + escapeHtml(item.trackName) + '</div>';
+                        html += '<div class="matched-name">匹配: ' + escapeHtml(key) + '</div>';
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.appendChild(document.createTextNode(str));
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
