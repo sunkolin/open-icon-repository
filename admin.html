@@ -331,7 +331,7 @@
                         } else {
                             html += '<div style="width:100px;height:100px;margin:0 auto;background:#f3f4f6;border-radius:16px;"></div>';
                         }
-                        html += '<div class="app-name" title="' + escapeHtml(item.trackName) + '">' + escapeHtml(item.trackName) + '</div>';
+                        html += '<div class="app-name" title="' + escapeHtml(item.trackName) + '">' + escapeHtml(truncateName(item.trackName)) + '</div>';
                         html += '<div class="matched-name">匹配: ' + escapeHtml(key) + '</div>';
                         html += '</div>';
                     }
@@ -341,6 +341,13 @@
             }
 
             content.innerHTML = html;
+        }
+
+        function truncateName(name, maxLen) {
+            maxLen = maxLen || 9;
+            if (!name) return '';
+            if (name.length <= maxLen) return name;
+            return name.substring(0, maxLen) + '...';
         }
 
         function escapeHtml(str) {
