@@ -204,7 +204,7 @@ func adminIconsHandler(w http.ResponseWriter, r *http.Request) {
 		return nil
 	})
 
-	if data, err := os.ReadFile(".icon/icon.txt"); err == nil {
+	if data, err := os.ReadFile("icon.txt"); err == nil {
 		for _, line := range strings.Split(string(data), "\n") {
 			line = strings.TrimSpace(line)
 			if line != "" {
