@@ -328,5 +328,7 @@ func main() {
 	})
 
 	fmt.Println("Server starting on http://localhost:6024")
+	fmt.Println("默认网址: http://localhost:6024/")
+	fmt.Println("管理页面: http://localhost:6024/admin.html")
 	log.Fatal(http.ListenAndServe(":6024", nil))
 }
