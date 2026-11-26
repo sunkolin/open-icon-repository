@@ -1,0 +1,1 @@
+./fnpack build open-icon-repository
